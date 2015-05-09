@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="mloader.js"></script>
+    <!--<script src="mloader.min.js"></script>-->
+    <script>
+//        m.load(['a.js','b.js','c.js']); //script 按照异步的方式执行的哈
+//        m.load('a.js','b.js','c.js');
+    </script>
+</head>
+<body>
+
+<script>
+
+//    console.log(a,b,c);
+    m.ready(function () {
+        console.log('DOMLoaded!');
+    });
+
+    m.load('a.js', function () {
+        console.log(a);
+    });
+
+    m.load(['test/a.js', 'b.js'], function () {
+        console.log(aa, b);
+    });
+
+    m.load('a.js', function () {
+        console.log(a);
+    });
+
+    m.load('b.js', function () {
+        console.log(b);
+    });
+
+    m.load('c.js', function () {
+        console.log(b);
+    });
+
+    m.load('a.js', 'b.js', function () {
+        console.log(a, b);
+    });
+
+    m.load('b.js', 'c.js', function () {
+        console.log(b);
+    });
+
+</script>
+
+
+<p id="a">aaaaaaa</p>
+
+<p>aaaaaaa</p>
+
+<p>aaaaaaa</p>
+
+<p>aaaaaaa</p>
+
+
+</body>
+</html>

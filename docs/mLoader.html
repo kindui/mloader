@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>mLoader.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>mLoader.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/*
+ * mloader.js     Very tiny script Loader;
+ * Author     human (huang jun hua)
+ * Company    Alibaba inc
+ * WebSite    http://loadjs.cn
+ * Email      halfthink@163.com
+ */</span>
+(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h3 id="tiny-asyn-script-loader-">tiny asyn script Loader.</h3>
+<pre><code>m.load(<span class="hljs-string">'a.js'</span>, <span class="hljs-string">'b.js'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{});
+</code></pre>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> doc       = <span class="hljs-built_in">document</span>,
+        win       = <span class="hljs-built_in">window</span>,
+        readyList = [],
+        isDomReady;
+
+    <span class="hljs-keyword">var</span> api = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+        api.ready.apply(<span class="hljs-literal">null</span>,<span class="hljs-built_in">arguments</span>);
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>————— Tool ————— start#</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">noop</span><span class="hljs-params">()</span></span>{}
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">each</span><span class="hljs-params">(arr, callback)</span></span>{
+        <span class="hljs-keyword">if</span>(!arr) <span class="hljs-keyword">return</span> ;
+
+        <span class="hljs-keyword">for</span> ( <span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i&lt;arr.length; i++ ) {
+            callback.call( arr, arr[i], i );
+        }
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is</span><span class="hljs-params">(type, obj)</span></span>{
+        <span class="hljs-keyword">return</span> obj != <span class="hljs-literal">null</span> &amp;&amp; <span class="hljs-built_in">Object</span>.prototype.toString.call(obj).slice(<span class="hljs-number">8</span>,-<span class="hljs-number">1</span>) == type ;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isFunction</span><span class="hljs-params">(obj)</span></span>{
+        <span class="hljs-keyword">return</span> is(<span class="hljs-string">'Function'</span>, obj);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isArray</span><span class="hljs-params">(obj)</span></span>{
+        <span class="hljs-keyword">return</span> is(<span class="hljs-string">'Array'</span>, obj);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">one</span><span class="hljs-params">(callback)</span> </span>{
+        <span class="hljs-keyword">if</span>(callback._done){
+            <span class="hljs-keyword">return</span> ;
+        }
+        callback._done = <span class="hljs-number">1</span>;
+        callback();
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>————— Tool ————— end#</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>————— Load ————— start#</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getFileName</span><span class="hljs-params">(path)</span> </span>{
+        <span class="hljs-comment">/* return test.js */</span>
+        <span class="hljs-keyword">var</span> items = path.split(<span class="hljs-string">'/'</span>),
+            name  = items[items.length - <span class="hljs-number">1</span>],
+            i     = name.indexOf(<span class="hljs-string">'?'</span>);
+
+        <span class="hljs-keyword">return</span> i == -<span class="hljs-number">1</span> ? name : substring(<span class="hljs-number">0</span>, i);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getAsset</span><span class="hljs-params">(path)</span> </span>{
+
+        <span class="hljs-keyword">var</span> isExist = <span class="hljs-literal">false</span>, existIndex;
+
+        <span class="hljs-keyword">var</span> asset = {
+            name: getFileName(path),
+            url:  path,
+            state:<span class="hljs-literal">false</span>
+        };
+
+        <span class="hljs-keyword">var</span> existing = assets[asset.name];
+
+        <span class="hljs-keyword">if</span> (existing) {
+            each(existing, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(item, i)</span> </span>{
+                <span class="hljs-keyword">if</span>(item.url == asset.url) {
+                    isExist = <span class="hljs-literal">true</span>;
+                    existIndex = i;
+                }
+            });
+        }<span class="hljs-keyword">else</span> {
+            assets[asset.name] = [];
+        }
+
+
+        <span class="hljs-keyword">if</span> (isExist) {
+            <span class="hljs-keyword">return</span> existing[existIndex];
+        } <span class="hljs-keyword">else</span> {
+            assets[asset.name].push(asset);
+        }
+
+        <span class="hljs-keyword">return</span> asset;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isAllLoaded</span><span class="hljs-params">(items)</span> </span>{
+        items = items || assets;
+
+        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> item <span class="hljs-keyword">in</span> items) {
+            <span class="hljs-keyword">if</span>(items.hasOwnProperty(item) &amp;&amp; items[item].state != LOADED) {
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+            }
+        }
+
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    }
+
+    <span class="hljs-comment">/*
+    function writeScript(src) {
+        document.write('&lt;scr'+'ipt type="text/javascript" src="'+ src +'"&gt;&lt;/scr'+'ipt&gt;');
+    }
+    */</span>
+
+    <span class="hljs-keyword">var</span> LOADING = <span class="hljs-number">3</span>,
+        LOADED  = <span class="hljs-number">4</span>;
+
+    <span class="hljs-keyword">var</span> assets = {},
+        handlers = {};
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">loads</span><span class="hljs-params">()</span> </span>{
+
+        <span class="hljs-keyword">var</span> args     = <span class="hljs-built_in">arguments</span>,
+            callback = args[args.length - <span class="hljs-number">1</span>],
+            items    = {};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>syn</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> (!isFunction(callback)) {
+            alert(<span class="hljs-string">'no callback fn'</span>);
+<span class="hljs-comment">/*
+            callback = noop;
+
+            if(isArray(args[0])){
+                arguments.callee.apply(null, args[0]);
+                return ;
+            }
+
+            each(args, function(src) {
+                writeScript(src);
+            });
+ */</span>
+            <span class="hljs-keyword">return</span> ;
+        }
+
+        <span class="hljs-keyword">if</span> (isArray(args[<span class="hljs-number">0</span>])) {
+            args[<span class="hljs-number">0</span>].push(callback);
+            <span class="hljs-built_in">arguments</span>.callee.apply(<span class="hljs-literal">null</span>, args[<span class="hljs-number">0</span>]);
+            <span class="hljs-keyword">return</span>;
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>store</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        each(args, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(item)</span> </span>{
+            <span class="hljs-keyword">if</span> (item != callback) {
+                item = getAsset(item);
+                items[item.name] = item;
+            }
+        });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>begin</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        each(args, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(item)</span> </span>{
+            <span class="hljs-keyword">if</span> (item != callback) {
+                item = getAsset(item);
+                load(item, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+                    <span class="hljs-keyword">if</span> (isAllLoaded(items)) {
+                        one(callback);
+                    }
+                });
+            }
+        });
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">load</span><span class="hljs-params">(asset, callback)</span> </span>{
+
+        <span class="hljs-keyword">if</span> (asset.state == LOADED) {
+            callback();
+            <span class="hljs-keyword">return</span> ;
+        }
+
+        <span class="hljs-keyword">if</span> (asset.state == LOADING) {
+            handlers[asset.name] || (handlers[asset.name] = []);
+            handlers[asset.name].push(callback);
+            <span class="hljs-keyword">return</span> ;
+        }
+
+        asset.state = LOADING;
+
+        loadScript(asset, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+
+            asset.state = LOADED;
+
+            callback();
+
+            each(handlers[asset.name], <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(callback)</span> </span>{
+                one(callback);
+            });
+        });
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">loadScript</span><span class="hljs-params">(asset, callback)</span> </span>{
+        callback = callback || noop;
+
+        <span class="hljs-built_in">console</span>.info(<span class="hljs-string">'request:'</span> + asset.url);
+
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">error</span><span class="hljs-params">()</span> </span>{
+        }
+
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">process</span><span class="hljs-params">(event)</span> </span>{
+            <span class="hljs-keyword">if</span> (event.type === <span class="hljs-string">"load"</span> || (<span class="hljs-regexp">/loaded|complete/</span>.test(ele.readyState) &amp;&amp; (!doc.documentMode || doc.documentMode &lt; <span class="hljs-number">9</span>))) {
+                clearTimeout(asset.errorTimeout);
+                ele.onload = ele.onreadystatechange = ele.onerror = <span class="hljs-literal">null</span>;
+
+                callback();
+
+            }
+        }
+
+        <span class="hljs-keyword">var</span> ele;
+
+        ele = doc.createElement(<span class="hljs-string">'script'</span>);
+        ele.type = <span class="hljs-string">'text/javascript'</span>;
+        ele.src = asset.url;
+
+        ele.onload = ele.onreadystatechange = process;
+        ele.onerror = error;
+
+        ele.async = <span class="hljs-literal">false</span>;
+        ele.defer = <span class="hljs-literal">false</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>7 second</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        asset.errorTimeout = setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+            error({type:<span class="hljs-string">'timeout'</span>});
+        }, <span class="hljs-number">7e3</span>);
+
+        <span class="hljs-keyword">var</span> head = doc.head || doc.getElementsByTagName(<span class="hljs-string">'head'</span>)[<span class="hljs-number">0</span>];
+        head.insertBefore(ele, head.lastChild);
+
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>————— Load ————— end#</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>————— DomReady ————— start#</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">domContentLoaded</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">if</span> (doc.addEventListener) {
+            doc.removeEventListener(<span class="hljs-string">'DOMContentLoaded'</span>, domContentLoaded, <span class="hljs-literal">false</span>);
+            domReady();
+        }
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">domReady</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">if</span> (!doc.body) {
+            clearTimeout(api.readyTimeout);
+            api.readyTimeout = setTimeout(domReady, <span class="hljs-number">50</span>);
+            <span class="hljs-keyword">return</span>;
+        }
+
+        <span class="hljs-keyword">if</span>(!isDomReady) {
+            isDomReady = <span class="hljs-literal">true</span>;
+            domReadyStart();
+        }
+
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">domReadyStart</span><span class="hljs-params">()</span> </span>{
+        each(readyList, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(callback)</span> </span>{
+            one(callback);
+        });
+
+    }
+
+    <span class="hljs-keyword">if</span> (doc.readyState == <span class="hljs-string">'complete'</span>) {
+        domReady();
+    }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (doc.addEventListener) {
+        doc.addEventListener(<span class="hljs-string">'DOMContentLoaded'</span>, domContentLoaded, <span class="hljs-literal">false</span>);
+        win.addEventListener(<span class="hljs-string">'load'</span>, domReady, <span class="hljs-literal">false</span>);
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>————— DomReady ————— end#</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>————— Exports ————— start#</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    api.load = loads;
+
+
+    api.ready = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(callback)</span></span>{
+            <span class="hljs-keyword">if</span>(isDomReady){
+                callback();
+            }<span class="hljs-keyword">else</span>{
+                readyList[readyList.length] = callback;
+            }
+    };
+
+    <span class="hljs-built_in">window</span>.m = api;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>————— Exports ————— end#</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+})();</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
